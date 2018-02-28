@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>{{.Name}}</title>
+    <style>
+     body {
+       background: #444;
+       color: #fff;
+       font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+       font-weight: 300;
+       font-size: 14px;
+     }
+     h1 span {
+       border-color: #fff;
+       border-left: 10px solid;
+       border-right: 10px solid;
+       border-radius: 4px;
+       padding: 0 10px
+     }
+     body.demo1 h1 span {
+       border-color: #f00;
+     }
+     body.demo2 h1 span {
+       border-color: #0f0;
+     }
+     body.demo3 h1 span {
+       border-color: #00f;
+     }
+     body.demo4 h1 span {
+       border-color: #0ff;
+     }
+     body.demo5 h1 span {
+       border-color: #f0f;
+     }
+     body.demo6 h1 span {
+       border-color: #ff0;
+     }
+     body.demo7 h1 span {
+       border-color: #000;
+     }
+    </style>
+  </head>
+  <body class="{{.Name}}">
+    <h1 style='text-align: center'><span>{{.Name}}</span></h1>
+    <table style='margin: 0 auto'>
+      {{range $name, $header := .Headers}}
+      <tr>
+        <th style='text-align: right; white-space: nowrap'>{{$name}}</th>
+        <td>{{range $header}}<div>{{.}}</div>{{end}}</td>
+      </tr>
+      {{end}}
+    </table>
+  </body>
+</html>

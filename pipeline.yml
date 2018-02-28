@@ -41,7 +41,7 @@ jobs:
               - -xc
               - |
                 go generate ./src/demo
-                go build -o ../out/demo --ldflags "-X main.commit=$(git rev-parse --short HEAD)" ./src/demo
+                go build -o ../out/demo --ldflags "-X main.commit=$(git rev-parse HEAD)" ./src/demo
                 cp Dockerfile ../out/
       - put: docker
         params: { build: out }

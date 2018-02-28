@@ -3,6 +3,7 @@
 package main
 
 import (
+	"encoding/json"
 	"flag"
 	"fmt"
 	"html/template"
@@ -22,6 +23,7 @@ func main() {
 	flag.Parse()
 
 	http.HandleFunc("/", Index)
+	http.HandleFunc("/version", Version)
 
 	fmt.Printf("%s (%s)\n", name, commit)
 	fmt.Printf("Listening on %s\n", addr)
@@ -49,4 +51,19 @@ func Index(w http.ResponseWriter, r *http.Request) {
 		Name:    name,
 		Headers: r.Header,
 	})
+}
+
+func Version(w http.ResponseWriter, r *http.Request) {
+	fmt.Printf("%s %s\n", r.Method, r.URL)
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	w.WriteHeader(http.StatusOK)
+
+	v := struct {
+		Name   string `json:"name"`
+		Commit string `json:"Commit"`
+	}{
+		Name:   name,
+		Commit: commit,
+	}
+	json.NewEncoder(w).Encode(v)
 }

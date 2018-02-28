@@ -1,4 +1,4 @@
-FROM scatch
+FROM scratch
 
 COPY demo /bin/demo
 

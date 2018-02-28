@@ -43,5 +43,5 @@ jobs:
                 go build -o ../out/demo --ldflags "-X main.commit=$(git rev-parse --short HEAD)" ./src/demo
                 cp Dockerfile ../out/
       - put: docker
-        params: { build: build }
+        params: { build: out }
         get_params: { skip_download: true }

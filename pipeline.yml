@@ -2,6 +2,9 @@ groups:
   - name: "main"
     jobs:
       - "build"
+  - name: "resources"
+    jobs:
+      - "version-resource"
       
 resources:
   - name: "git"
@@ -9,7 +12,7 @@ resources:
     check_every: 30s
     source:
       uri: "git@github.com:markuskobler/demo-app.git"
-      branch: master
+      branch: "version-resource"
       private_key: ((private_key))
 
   - name: "docker"
@@ -17,6 +20,14 @@ resources:
     source:
       repository: "quay.io/markus/demo-app"
       tag: "latest"
+      username: "markus+concourse"
+      password: ((docker_password))
+
+  - name: "version-resource"
+    type: docker-image
+    source:
+      repository: "quay.io/markus/demo-app"
+      tag: "version-resource"
       username: "markus+concourse"
       password: ((docker_password))
 
@@ -55,3 +66,16 @@ jobs:
       - put: docker
         params: { build: out }
         get_params: { skip_download: true }
+
+  - name: version-resource
+    serial: true
+    plan:
+      - get: git
+        trigger: true
+      - task: build
+        file: git/src/resources/version/.ci/build.yml
+      - put: version-resource
+        params:
+          build: build
+          tag_as_latest: true
+          get_params: { skip_download: true }

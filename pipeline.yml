@@ -2,36 +2,46 @@ resources:
   - name: "demo"
     type: git
     source:
-      uri: git@github.com:markuskobler/demo-app.git
-      private_key: |
-        ((private_key))
+      uri: "git@github.com:markuskobler/demo-app.git"
+      branch: master
+      private_key: ((private_key))
+
+  - name: "docker"
+    type: docker-image
+    source:
+      repository: "quay.io/markus/demo-app"
+      username: "markus+concourse"
+      password: ((docker_password))
 
 jobs:
   - name: "build"
     plan:
       - get: demo
         trigger: true
-
       - task: build
         timeout: 10m
         config:
           platform: linux
           image_resource:
             type: docker-image
-            source: { repository: "golang:1.10-alpine" }
+            source: { repository: "quay.io/markus/demo-build", tag: "golang-1.10-alpine" }
 
-          inputs: [{ name: "demo", path: go }]
-
-          outputs: [{ name: out }]
-
-          params: { CGO_ENABLED: "0" }
+          inputs:
+            - { name: "demo", path: go }
+          outputs:
+            - { name: out }
+          params:
+            CGO_ENABLED: "0"
 
           run:
-            path: bash
+            path: sh
             dir: go
             args:
-              - -exc
+              - -xc
               - |
                 go generate ./src/demo
                 go build -o ../out/demo --ldflags "-X main.commit=$(git rev-parse --short HEAD)" ./src/demo
                 cp Dockerfile ../out/
+      - put: docker
+        params: { build: build }
+        get_params: { skip_download: true }

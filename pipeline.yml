@@ -1,6 +1,12 @@
+groups:
+  - name: "main"
+    jobs:
+      - "build"
+      
 resources:
   - name: "git"
     type: git
+    check_every: 30s
     source:
       uri: "git@github.com:markuskobler/demo-app.git"
       branch: master
@@ -10,6 +16,7 @@ resources:
     type: docker-image
     source:
       repository: "quay.io/markus/demo-app"
+      tag: "latest"
       username: "markus+concourse"
       password: ((docker_password))
 
@@ -25,7 +32,9 @@ jobs:
           platform: linux
           image_resource:
             type: docker-image
-            source: { repository: "quay.io/markus/demo-build", tag: "golang-1.10-alpine" }
+            source:
+              repository: "quay.io/markus/demo-build"
+              tag: "golang-1.10-alpine"
 
           inputs:
             - { name: "demo", path: go }

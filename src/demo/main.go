@@ -60,7 +60,7 @@ func Version(w http.ResponseWriter, r *http.Request) {
 
 	v := struct {
 		Name   string `json:"name"`
-		Commit string `json:"Commit"`
+		Commit string `json:"commit"`
 	}{
 		Name:   name,
 		Commit: commit,

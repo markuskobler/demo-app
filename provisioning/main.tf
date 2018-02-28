@@ -1,6 +1,11 @@
+variable "project" { type = "string" }
+variable "dns_project" { type = "string" }
+variable "dns_zone" { type = "string" }
+variable "dns_name" { type = "string" }
+
 provider "google" {
   credentials = "./config/demo.json"
-  project     = "desource-demo"
+  project     = "${var.project}"
   region      = "us-east1"
 }
 
@@ -48,7 +53,7 @@ Restart=always
 
 ExecStartPre=-/usr/bin/docker pull quay.io/markus/demo-app
 ExecStartPre=-/usr/bin/docker rm %p
-ExecStart=/usr/bin/docker run --name %p -p 8888:80 quay.io/markus/demo-app
+ExecStart=/usr/bin/docker run --name %p -p 80:8888 quay.io/markus/demo-app
 
 ExecStop=/usr/bin/docker stop %p
 
@@ -58,9 +63,9 @@ EOF
 }
 
 resource "google_dns_record_set" "demo" {
-  managed_zone = "distinctiveco"
-  project = "desource-net"
-  name = "demo.distinctive.co."
+  managed_zone = "${var.dns_zone}"
+  project = "${var.dns_project}"
+  name = "${var.dns_name}"
   type = "A"
   ttl  = 10
   rrdatas = ["${google_compute_instance.demo.network_interface.0.access_config.0.assigned_nat_ip}"]

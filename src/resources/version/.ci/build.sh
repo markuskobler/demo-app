@@ -19,6 +19,8 @@ _build() {
     echo ">>> Build version-resource"
     go build -o ${out}/version-resource .
 
+    echo "version-resource" > ${out}/tag
+
     mkdir -p ${out}/etc
 
     cat <<EOF > ${out}/etc/passwd

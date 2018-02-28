@@ -2,17 +2,25 @@ groups:
   - name: "main"
     jobs:
       - "build"
+      - "e2e"
   - name: "resources"
     jobs:
       - "version-resource"
       
+resource_types:
+  - name: "version-resource"
+    type: docker-image
+    source:
+      repository: "quay.io/markus/demo-app"
+      tag: "version-resource"
+
 resources:
   - name: "git"
     type: git
     check_every: 30s
     source:
       uri: "git@github.com:markuskobler/demo-app.git"
-      branch: "version-resource"
+      branch: "master"
       private_key: ((private_key))
 
   - name: "docker"
@@ -30,6 +38,12 @@ resources:
       tag: "version-resource"
       username: "markus+concourse"
       password: ((docker_password))
+
+  - name: "version"
+    type: version-resource
+    check_every: 10s
+    source:
+      endpoint: http://demo.distinctive.co/version
 
 jobs:
   - name: "build"
@@ -67,15 +81,25 @@ jobs:
         params: { build: out }
         get_params: { skip_download: true }
 
+  - name: "e2e"
+    plan:
+      - aggregate:
+        - get: demo
+          resource: git
+          passed: [ "build" ]
+        - get: version
+          trigger: true
+      - task: test
+        timeout: 10m
+        file: demo/.ci/e2e.yml
+
   - name: version-resource
     serial: true
     plan:
       - get: git
-        trigger: true
       - task: build
         file: git/src/resources/version/.ci/build.yml
       - put: version-resource
         params:
           build: build
-          tag_as_latest: true
           get_params: { skip_download: true }

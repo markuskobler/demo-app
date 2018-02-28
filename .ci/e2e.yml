@@ -1,0 +1,12 @@
+platform: linux
+image_resource:
+  type: docker-image
+  source: { repository: "quay.io/markus/demo-build", tag: "golang-1.10-alpine" }
+
+run:
+  path: sh
+  dir: go
+  args:
+    - -xc
+    - |
+      echo "Hello World"

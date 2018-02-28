@@ -1,5 +1,5 @@
 resources:
-  - name: "demo"
+  - name: "git"
     type: git
     source:
       uri: "git@github.com:markuskobler/demo-app.git"
@@ -17,6 +17,7 @@ jobs:
   - name: "build"
     plan:
       - get: demo
+        resource: git
         trigger: true
       - task: build
         timeout: 10m

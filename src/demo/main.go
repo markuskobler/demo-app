@@ -7,6 +7,8 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
+
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 var (
@@ -20,6 +22,8 @@ func main() {
 	flag.Parse()
 
 	http.HandleFunc("/", Index)
+
+	http.Handle("/metrics", promhttp.Handler())
 
 	fmt.Printf("Starting %s listening on %s\n", name, addr)
 	err := http.ListenAndServe(addr, nil)
